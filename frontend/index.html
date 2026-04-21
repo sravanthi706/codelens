@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeLens - AI Code Reviewer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 CodeLens</h1>
+            <p>AI-Powered Code Reviewer & Bug Explainer</p>
+        </header>
+
+        <div class="editor-section">
+            <div class="controls">
+                <select id="language">
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                    <option value="c">C</option>
+                </select>
+                <button onclick="reviewCode()" id="reviewBtn">⚡ Review Code</button>
+                <button onclick="clearAll()">🗑️ Clear</button>
+                <button onclick="loadHistory()">📜 History</button>
+            </div>
+            <textarea id="codeInput" placeholder="Paste your code here..."></textarea>
+        </div>
+
+        <div class="output-section" id="output">
+            <p class="placeholder">Your AI review will appear here...</p>
+        </div>
+
+        <div class="history-section" id="historySection" style="display:none;">
+            <h2>📜 Review History</h2>
+            <div id="historyList"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
