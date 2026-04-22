@@ -1,108 +1,143 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #0f0f1a;
-    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    background: #0a0a14;
+    color: #e0e0f0;
     min-height: 100vh;
 }
 
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 30px 20px;
-}
-
-header {
+.header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    padding: 25px 40px;
+    border-bottom: 2px solid #7c3aed;
     text-align: center;
-    margin-bottom: 30px;
 }
 
-header h1 {
-    font-size: 2.5rem;
+.logo {
+    font-size: 2.2rem;
+    font-weight: 700;
     color: #7c3aed;
+    letter-spacing: 2px;
 }
 
-header p {
-    color: #a0a0b0;
-    margin-top: 8px;
-}
+.tagline { color: #a0a0c0; margin-top: 5px; }
 
-.controls {
+.stats-bar {
     display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+    justify-content: center;
+    gap: 20px;
+    padding: 15px;
+    background: #12122a;
+    flex-wrap: wrap;
 }
+
+.stat {
+    background: #1e1e3a;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    border: 1px solid #7c3aed33;
+    color: #a0a0d0;
+}
+
+.container { max-width: 950px; margin: 30px auto; padding: 0 20px; }
+
+.card {
+    background: #13132a;
+    border-radius: 12px;
+    border: 1px solid #2a2a4a;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #1a1a35;
+    border-bottom: 1px solid #2a2a4a;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.card-header h2 { font-size: 1rem; color: #c0c0e0; }
+
+.controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
 select {
-    padding: 10px;
+    padding: 8px 12px;
     border-radius: 8px;
-    border: none;
-    background: #1e1e2e;
+    border: 1px solid #7c3aed;
+    background: #1e1e3a;
     color: white;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
 }
 
 button {
-    padding: 10px 20px;
+    padding: 8px 18px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
 #reviewBtn {
-    background: #7c3aed;
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
     color: white;
 }
 
-#reviewBtn:hover {
-    background: #6d28d9;
-}
+#reviewBtn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px #7c3aed66; }
+
+.btn-secondary { background: #1e1e3a; color: #a0a0d0; border: 1px solid #3a3a5a; }
+.btn-secondary:hover { background: #2a2a4a; }
+
+.btn-export { background: linear-gradient(135deg, #059669, #047857); color: white; }
+.btn-export:hover { transform: translateY(-2px); }
 
 textarea {
     width: 100%;
-    height: 250px;
-    background: #1e1e2e;
+    height: 280px;
+    background: #0d0d1f;
     color: #00ff88;
-    border: 1px solid #7c3aed;
-    border-radius: 8px;
-    padding: 15px;
-    font-size: 0.95rem;
-    font-family: monospace;
+    border: none;
+    padding: 20px;
+    font-size: 0.9rem;
+    font-family: 'Fira Code', monospace;
     resize: vertical;
+    outline: none;
+    line-height: 1.6;
 }
+
+.loader { text-align: center; padding: 40px; }
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #1e1e3a;
+    border-top: 4px solid #7c3aed;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .output-section {
-    margin-top: 20px;
-    background: #1e1e2e;
-    border-radius: 8px;
     padding: 20px;
-    min-height: 150px;
-    border: 1px solid #333;
     white-space: pre-wrap;
-    line-height: 1.7;
-}
-
-.placeholder {
-    color: #555;
-    text-align: center;
-    margin-top: 40px;
-}
-
-.history-section {
-    margin-top: 30px;
+    line-height: 1.8;
+    font-size: 0.95rem;
+    color: #d0d0f0;
 }
 
 .history-item {
-    background: #1e1e2e;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-left: 4px solid #7c3aed;
+    padding: 15px 20px;
+    border-bottom: 1px solid #2a2a4a;
 }
+
+.history-item strong { color: #7c3aed; }

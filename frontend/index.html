@@ -5,39 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodeLens - AI Code Reviewer</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🔍 CodeLens</h1>
-            <p>AI-Powered Code Reviewer & Bug Explainer</p>
-        </header>
+    <header class="header">
+        <div class="logo">🔍 CodeLens</div>
+        <p class="tagline">AI-Powered Code Reviewer & Bug Explainer</p>
+    </header>
 
-        <div class="editor-section">
-            <div class="controls">
-                <select id="language">
-                    <option value="python">Python</option>
-                    <option value="javascript">JavaScript</option>
-                    <option value="java">Java</option>
-                    <option value="cpp">C++</option>
-                    <option value="c">C</option>
-                </select>
-                <button onclick="reviewCode()" id="reviewBtn">⚡ Review Code</button>
-                <button onclick="clearAll()">🗑️ Clear</button>
-                <button onclick="loadHistory()">📜 History</button>
+    <div class="stats-bar">
+        <div class="stat">⚡ Instant Analysis</div>
+        <div class="stat">🐛 Bug Detection</div>
+        <div class="stat">🔒 Security Check</div>
+        <div class="stat">⭐ Code Scoring</div>
+    </div>
+
+    <main class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>📝 Paste Your Code</h2>
+                <div class="controls">
+                    <select id="language">
+                        <option value="python">🐍 Python</option>
+                        <option value="javascript">🌐 JavaScript</option>
+                        <option value="java">☕ Java</option>
+                        <option value="cpp">⚙️ C++</option>
+                        <option value="c">🔧 C</option>
+                    </select>
+                    <button onclick="reviewCode()" id="reviewBtn">⚡ Review Code</button>
+                    <button onclick="clearAll()" class="btn-secondary">🗑️ Clear</button>
+                    <button onclick="loadHistory()" class="btn-secondary">📜 History</button>
+                </div>
             </div>
             <textarea id="codeInput" placeholder="Paste your code here..."></textarea>
         </div>
 
-        <div class="output-section" id="output">
-            <p class="placeholder">Your AI review will appear here...</p>
+        <div id="loader" class="loader" style="display:none;">
+            <div class="spinner"></div>
+            <p>🤖 AI is analyzing your code...</p>
         </div>
 
-        <div class="history-section" id="historySection" style="display:none;">
-            <h2>📜 Review History</h2>
+        <div class="card" id="outputCard" style="display:none;">
+            <div class="card-header">
+                <h2>🔍 AI Review Results</h2>
+                <button onclick="exportPDF()" class="btn-export">📄 Export PDF</button>
+            </div>
+            <div class="output-section" id="output"></div>
+        </div>
+
+        <div class="card" id="historySection" style="display:none;">
+            <div class="card-header">
+                <h2>📜 Review History</h2>
+                <button onclick="closeHistory()" class="btn-secondary">✕ Close</button>
+            </div>
             <div id="historyList"></div>
         </div>
-    </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

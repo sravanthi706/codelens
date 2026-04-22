@@ -4,13 +4,16 @@ async function reviewCode() {
     const code = document.getElementById("codeInput").value;
     const language = document.getElementById("language").value;
     const output = document.getElementById("output");
+    const loader = document.getElementById("loader");
+    const outputCard = document.getElementById("outputCard");
 
     if (!code.trim()) {
-        output.innerHTML = "<p style='color:red'>Please paste some code first!</p>";
+        alert("Please paste some code first!");
         return;
     }
 
-    output.innerHTML = "<p style='color:#7c3aed'>⏳ Analyzing your code with AI...</p>";
+    loader.style.display = "block";
+    outputCard.style.display = "none";
 
     try {
         const response = await fetch(`${API}/review`, {
@@ -20,10 +23,24 @@ async function reviewCode() {
         });
 
         const data = await response.json();
-        output.innerHTML = data.review || data.error;
+        loader.style.display = "none";
+        outputCard.style.display = "block";
+        output.innerHTML = formatReview(data.review || data.error);
+
     } catch (error) {
+        loader.style.display = "none";
+        outputCard.style.display = "block";
         output.innerHTML = "<p style='color:red'>❌ Error connecting to server!</p>";
     }
+}
+
+function formatReview(text) {
+    return text
+        .replace(/🐛 BUGS:/g, "<span style='color:#ff6b6b;font-weight:bold;font-size:1.1rem'>🐛 BUGS:</span>")
+        .replace(/⚡ TIME COMPLEXITY:/g, "<span style='color:#ffd93d;font-weight:bold;font-size:1.1rem'>⚡ TIME COMPLEXITY:</span>")
+        .replace(/🔒 SECURITY ISSUES:/g, "<span style='color:#ff9f43;font-weight:bold;font-size:1.1rem'>🔒 SECURITY ISSUES:</span>")
+        .replace(/✅ SUGGESTIONS:/g, "<span style='color:#00ff88;font-weight:bold;font-size:1.1rem'>✅ SUGGESTIONS:</span>")
+        .replace(/⭐ OVERALL SCORE:/g, "<span style='color:#a29bfe;font-weight:bold;font-size:1.1rem'>⭐ OVERALL SCORE:</span>");
 }
 
 async function loadHistory() {
@@ -31,31 +48,67 @@ async function loadHistory() {
     const historyList = document.getElementById("historyList");
 
     historySection.style.display = "block";
-    historyList.innerHTML = "<p>Loading...</p>";
+    historyList.innerHTML = "<p style='padding:20px;color:#666'>Loading...</p>";
 
     try {
         const response = await fetch(`${API}/history`);
         const data = await response.json();
 
         if (data.length === 0) {
-            historyList.innerHTML = "<p>No history yet!</p>";
+            historyList.innerHTML = "<p style='padding:20px;color:#666'>No history yet!</p>";
             return;
         }
 
         historyList.innerHTML = data.map(item => `
             <div class="history-item">
-                <strong>Language:</strong> ${item.language} |
-                <strong>Date:</strong> ${item.created_at}<br><br>
-                ${item.review.substring(0, 200)}...
+                <strong>${item.language.toUpperCase()}</strong> &nbsp;|&nbsp;
+                <span style="color:#666;font-size:0.85rem">${item.created_at}</span>
+                <p style="margin-top:8px;color:#a0a0c0;font-size:0.9rem">
+                    ${item.review.substring(0, 150)}...
+                </p>
             </div>
         `).join("");
+
     } catch (error) {
-        historyList.innerHTML = "<p style='color:red'>Error loading history!</p>";
+        historyList.innerHTML = "<p style='padding:20px;color:red'>Error loading history!</p>";
+    }
+}
+
+function closeHistory() {
+    document.getElementById("historySection").style.display = "none";
+}
+
+async function exportPDF() {
+    const output = document.getElementById("output").innerText;
+
+    if (!output.trim()) {
+        alert("No review to export!");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API}/export-pdf`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ review: output })
+        });
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "codelens_review.pdf";
+        a.click();
+
+    } catch (error) {
+        alert("Error exporting PDF!");
     }
 }
 
 function clearAll() {
     document.getElementById("codeInput").value = "";
-    document.getElementById("output").innerHTML = "<p class='placeholder'>Your AI review will appear here...</p>";
+    document.getElementById("output").innerHTML = "";
+    document.getElementById("outputCard").style.display = "none";
     document.getElementById("historySection").style.display = "none";
+    document.getElementById("loader").style.display = "none";
 }
