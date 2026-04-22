@@ -112,3 +112,35 @@ function clearAll() {
     document.getElementById("historySection").style.display = "none";
     document.getElementById("loader").style.display = "none";
 }
+async function analyzeCode() {
+    const code = document.getElementById("codeInput").value;
+    const language = document.getElementById("language").value;
+    const analysisSection = document.getElementById("analysisSection");
+    const analysisOutput = document.getElementById("analysisOutput");
+
+    if (!code.trim()) {
+        alert("Please paste some code first!");
+        return;
+    }
+
+    analysisSection.style.display = "block";
+    analysisOutput.innerHTML = "⏳ Running static analysis...";
+
+    try {
+        const response = await fetch(`${API}/analyze`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, language })
+        });
+
+        const data = await response.json();
+        analysisOutput.innerHTML = data.analysis || data.error;
+
+    } catch (error) {
+        analysisOutput.innerHTML = "❌ Error running analysis!";
+    }
+}
+
+function closeAnalysis() {
+    document.getElementById("analysisSection").style.display = "none";
+}

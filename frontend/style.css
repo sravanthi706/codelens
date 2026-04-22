@@ -141,3 +141,29 @@ textarea {
 }
 
 .history-item strong { color: #7c3aed; }
+.btn-analyze {
+    background: linear-gradient(135deg, #0891b2, #0e7490);
+    color: white;
+}
+
+.btn-analyze:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px #0891b266;
+}
+
+.analysis-section {
+    background: #13132a;
+    border-radius: 12px;
+    border: 1px solid #0891b2;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.analysis-output {
+    padding: 20px;
+    white-space: pre-wrap;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    color: #a0d8ef;
+    line-height: 1.8;
+}

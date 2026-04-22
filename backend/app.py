@@ -1,8 +1,10 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 from reviewer import review_code
 from database import init_db, save_review, get_history
+from analyzer import analyze_python_code
 import os
+import io
 
 app = Flask(__name__, static_folder='../frontend')
 CORS(app)
@@ -36,12 +38,22 @@ def history():
     ]
     return jsonify(history_list)
 
+@app.route("/analyze", methods=["POST"])
+def analyze():
+    data = request.json
+    code = data.get("code", "")
+    language = data.get("language", "python")
+    if language != "python":
+        return jsonify({"analysis": "⚠️ Static analysis only available for Python!"})
+    if not code.strip():
+        return jsonify({"error": "No code provided"}), 400
+    result = analyze_python_code(code)
+    return jsonify({"analysis": result})
+
 @app.route("/export-pdf", methods=["POST"])
 def export_pdf():
     from reportlab.lib.pagesizes import letter
     from reportlab.pdfgen import canvas
-    from flask import send_file
-    import io
     data = request.json
     review_text = data.get("review", "")
     buffer = io.BytesIO()
@@ -64,4 +76,3 @@ def export_pdf():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-    
