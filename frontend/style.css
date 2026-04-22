@@ -167,3 +167,12 @@ textarea {
     color: #a0d8ef;
     line-height: 1.8;
 }
+.btn-improve {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: white;
+}
+
+.btn-improve:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px #d9770666;
+}

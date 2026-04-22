@@ -7,10 +7,7 @@ async function reviewCode() {
     const loader = document.getElementById("loader");
     const outputCard = document.getElementById("outputCard");
 
-    if (!code.trim()) {
-        alert("Please paste some code first!");
-        return;
-    }
+    if (!code.trim()) { alert("Please paste some code first!"); return; }
 
     loader.style.display = "block";
     outputCard.style.display = "none";
@@ -21,17 +18,51 @@ async function reviewCode() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code, language })
         });
-
         const data = await response.json();
         loader.style.display = "none";
         outputCard.style.display = "block";
         output.innerHTML = formatReview(data.review || data.error);
-
     } catch (error) {
         loader.style.display = "none";
         outputCard.style.display = "block";
         output.innerHTML = "<p style='color:red'>❌ Error connecting to server!</p>";
     }
+}
+
+async function improveCode() {
+    const code = document.getElementById("codeInput").value;
+    const language = document.getElementById("language").value;
+    const improveSection = document.getElementById("improveSection");
+    const improveOutput = document.getElementById("improveOutput");
+    const loader = document.getElementById("loader");
+
+    if (!code.trim()) { alert("Please paste some code first!"); return; }
+
+    loader.style.display = "block";
+    improveSection.style.display = "none";
+
+    try {
+        const response = await fetch(`${API}/improve`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, language })
+        });
+        const data = await response.json();
+        loader.style.display = "none";
+        improveSection.style.display = "block";
+        improveOutput.innerHTML = formatImprovement(data.improvement || data.error);
+    } catch (error) {
+        loader.style.display = "none";
+        improveSection.style.display = "block";
+        improveOutput.innerHTML = "<p style='color:red'>❌ Error connecting to server!</p>";
+    }
+}
+
+function formatImprovement(text) {
+    return text
+        .replace(/📌 ISSUE/g, "<br><span style='color:#ffd93d;font-weight:bold;font-size:1.1rem'>📌 ISSUE</span>")
+        .replace(/❌ BEFORE:/g, "<span style='color:#ff6b6b;font-weight:bold'>❌ BEFORE:</span>")
+        .replace(/✅ AFTER:/g, "<span style='color:#00ff88;font-weight:bold'>✅ AFTER:</span>");
 }
 
 function formatReview(text) {
@@ -41,6 +72,30 @@ function formatReview(text) {
         .replace(/🔒 SECURITY ISSUES:/g, "<span style='color:#ff9f43;font-weight:bold;font-size:1.1rem'>🔒 SECURITY ISSUES:</span>")
         .replace(/✅ SUGGESTIONS:/g, "<span style='color:#00ff88;font-weight:bold;font-size:1.1rem'>✅ SUGGESTIONS:</span>")
         .replace(/⭐ OVERALL SCORE:/g, "<span style='color:#a29bfe;font-weight:bold;font-size:1.1rem'>⭐ OVERALL SCORE:</span>");
+}
+
+async function analyzeCode() {
+    const code = document.getElementById("codeInput").value;
+    const language = document.getElementById("language").value;
+    const analysisSection = document.getElementById("analysisSection");
+    const analysisOutput = document.getElementById("analysisOutput");
+
+    if (!code.trim()) { alert("Please paste some code first!"); return; }
+
+    analysisSection.style.display = "block";
+    analysisOutput.innerHTML = "⏳ Running static analysis...";
+
+    try {
+        const response = await fetch(`${API}/analyze`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, language })
+        });
+        const data = await response.json();
+        analysisOutput.innerHTML = data.analysis || data.error;
+    } catch (error) {
+        analysisOutput.innerHTML = "❌ Error running analysis!";
+    }
 }
 
 async function loadHistory() {
@@ -68,23 +123,14 @@ async function loadHistory() {
                 </p>
             </div>
         `).join("");
-
     } catch (error) {
         historyList.innerHTML = "<p style='padding:20px;color:red'>Error loading history!</p>";
     }
 }
 
-function closeHistory() {
-    document.getElementById("historySection").style.display = "none";
-}
-
 async function exportPDF() {
     const output = document.getElementById("output").innerText;
-
-    if (!output.trim()) {
-        alert("No review to export!");
-        return;
-    }
+    if (!output.trim()) { alert("No review to export!"); return; }
 
     try {
         const response = await fetch(`${API}/export-pdf`, {
@@ -92,55 +138,27 @@ async function exportPDF() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ review: output })
         });
-
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
         a.download = "codelens_review.pdf";
         a.click();
-
     } catch (error) {
         alert("Error exporting PDF!");
     }
 }
+
+function closeHistory() { document.getElementById("historySection").style.display = "none"; }
+function closeAnalysis() { document.getElementById("analysisSection").style.display = "none"; }
+function closeImprove() { document.getElementById("improveSection").style.display = "none"; }
 
 function clearAll() {
     document.getElementById("codeInput").value = "";
     document.getElementById("output").innerHTML = "";
     document.getElementById("outputCard").style.display = "none";
     document.getElementById("historySection").style.display = "none";
-    document.getElementById("loader").style.display = "none";
-}
-async function analyzeCode() {
-    const code = document.getElementById("codeInput").value;
-    const language = document.getElementById("language").value;
-    const analysisSection = document.getElementById("analysisSection");
-    const analysisOutput = document.getElementById("analysisOutput");
-
-    if (!code.trim()) {
-        alert("Please paste some code first!");
-        return;
-    }
-
-    analysisSection.style.display = "block";
-    analysisOutput.innerHTML = "⏳ Running static analysis...";
-
-    try {
-        const response = await fetch(`${API}/analyze`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code, language })
-        });
-
-        const data = await response.json();
-        analysisOutput.innerHTML = data.analysis || data.error;
-
-    } catch (error) {
-        analysisOutput.innerHTML = "❌ Error running analysis!";
-    }
-}
-
-function closeAnalysis() {
     document.getElementById("analysisSection").style.display = "none";
+    document.getElementById("improveSection").style.display = "none";
+    document.getElementById("loader").style.display = "none";
 }

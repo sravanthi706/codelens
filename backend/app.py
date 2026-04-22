@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
-from reviewer import review_code
+from reviewer import review_code, get_improved_code
 from database import init_db, save_review, get_history
 from analyzer import analyze_python_code
 import os
@@ -28,6 +28,16 @@ def review():
     result = review_code(code, language)
     save_review(language, code, result)
     return jsonify({"review": result})
+
+@app.route("/improve", methods=["POST"])
+def improve():
+    data = request.json
+    code = data.get("code", "")
+    language = data.get("language", "python")
+    if not code.strip():
+        return jsonify({"error": "No code provided"}), 400
+    result = get_improved_code(code, language)
+    return jsonify({"improvement": result})
 
 @app.route("/history", methods=["GET"])
 def history():

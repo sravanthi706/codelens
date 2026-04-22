@@ -1,18 +1,14 @@
+import google.generativeai as genai
 import os
-from google import genai
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
-# Initialize the Gemini Client
-# The new SDK uses the Client class to manage authentication and model calls
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+api_key = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=api_key)
+model = genai.GenerativeModel("gemini-2.0-flash")
 
 def review_code(code, language):
-    """
-    Sends code to Gemini 2.0 Flash for a detailed technical review.
-    """
     prompt = f"""
     You are an expert code reviewer. Analyze the following {language} code and provide:
 
@@ -23,27 +19,34 @@ def review_code(code, language):
     5. ⭐ OVERALL SCORE: Rate the code out of 10
 
     Code:
-    ```{language}
+```{language}
     {code}
-    ```
+```
 
     Be specific, clear, and beginner-friendly.
     """
+    response = model.generate_content(prompt)
+    return response.text
 
-    try:
-        # Using the new SDK syntax: client.models.generate_content
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
-        )
-        
-        # In the new SDK, the text is accessed via response.text
-        return response.text
+def get_improved_code(code, language):
+    prompt = f"""
+    You are an expert code reviewer.
+    Show BEFORE and AFTER comparison for this {language} code.
+    Format your response EXACTLY like this:
 
-    except Exception as e:
-        return f"Error during code review: {str(e)}"
+    📌 ISSUE 1: [describe the issue]
 
-# Example usage (for testing purposes):
-if __name__ == "__main__":
-    sample_code = "print('Hello ' + name)"
-    print(review_code(sample_code, "python"))
+    ❌ BEFORE:
+    [original problematic code]
+    ✅ AFTER:
+    [improved code]
+    Show maximum 3 most important improvements only.
+
+    Code to analyze:
+```{language}
+    {code}
+```
+    """
+    response = model.generate_content(prompt)
+    return response.text
+
