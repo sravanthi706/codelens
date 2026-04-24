@@ -14,13 +14,19 @@
 ## 📸 Screenshots
 
 ### Main Dashboard
-![Main Page](frontend/assets/screenshots/main.png)
+<p align="center">
+  <img src="frontend/assets/screenshots/main.png" width="800">
+</p>
 
 ### Static Analysis
-![Static Analysis](frontend/assets/screenshots/analysis.png)
+<p align="center">
+  <img src="frontend/assets/screenshots/analysis.png" width="800">
+</p>
 
 ### AI Review Results
-![AI Review](frontend/assets/screenshots/review.png)
+<p align="center">
+  <img src="frontend/assets/screenshots/review.png" width="800">
+</p>
 
 ## 🛠️ Tech Stack
 
