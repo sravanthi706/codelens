@@ -23,9 +23,13 @@ def review():
     data = request.json
     code = data.get("code", "")
     language = data.get("language", "python")
+    model = data.get("model", "llama-3.3-70b-versatile")
+    depth = data.get("depth", "detailed")
+    
     if not code.strip():
         return jsonify({"error": "No code provided"}), 400
-    result = review_code(code, language)
+        
+    result = review_code(code, language, model, depth)
     save_review(language, code, result)
     return jsonify({"review": result})
 
@@ -68,15 +72,26 @@ def export_pdf():
     review_text = data.get("review", "")
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=letter)
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(50, 750, "CodeLens - AI Code Review Report")
+    c.setFont("Helvetica-Bold", 20)
+    c.setStrokeColorRGB(0.48, 0.22, 0.93) # Accent color #7c3aed
+    c.drawString(50, 750, "CodeLens")
     c.setFont("Helvetica", 10)
-    y = 720
+    c.drawString(50, 735, "AI-Powered Code Review Report")
+    c.line(50, 730, 550, 730)
+    
+    c.setFont("Helvetica", 9)
+    y = 700
     for line in review_text.split("\n"):
         if y < 50:
             c.showPage()
             y = 750
-        c.drawString(50, y, line[:100])
+        # Simple word wrap
+        if len(line) > 90:
+            c.drawString(50, y, line[:90])
+            y -= 12
+            c.drawString(50, y, line[90:])
+        else:
+            c.drawString(50, y, line)
         y -= 15
     c.save()
     buffer.seek(0)
@@ -85,4 +100,5 @@ def export_pdf():
                      mimetype="application/pdf")
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host="0.0.0.0", port=port)

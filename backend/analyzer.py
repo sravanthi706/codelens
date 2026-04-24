@@ -21,6 +21,9 @@ def analyze_python_code(code):
 
         output = result.stdout + result.stderr
 
+        # Strip local paths for a cleaner output
+        output = output.replace(temp_file, "code.py")
+
         # Clean up temp file
         os.unlink(temp_file)
 

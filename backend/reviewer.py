@@ -1,34 +1,42 @@
-import google.generativeai as genai
+from groq import Groq
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-api_key = os.getenv("GEMINI_API_KEY")
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-2.0-flash")
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def review_code(code, language):
+def review_code(code, language, model="llama-3.3-70b-versatile", depth="detailed"):
+    depth_prompt = {
+        "concise": "Provide a very brief, high-level review highlighting only the most critical issues.",
+        "detailed": "Provide a thorough analysis with explanations for each point.",
+        "step-by-step": "Explain each issue and suggestion in a simple, step-by-step manner suitable for a complete beginner."
+    }
+
     prompt = f"""
-    You are an expert code reviewer. Analyze the following {language} code and provide:
+    You are an expert code reviewer. Analyze the following {language} code.
+    Level of detail: {depth_prompt.get(depth, depth_prompt['detailed'])}
 
-    1. 🐛 BUGS: List any bugs or errors found
-    2. ⚡ TIME COMPLEXITY: Big-O analysis
-    3. 🔒 SECURITY ISSUES: Any vulnerabilities
-    4. ✅ SUGGESTIONS: How to improve the code
-    5. ⭐ OVERALL SCORE: Rate the code out of 10
+    Provide your response in this EXACT format:
+    🐛 BUGS: [List major bugs or logical errors]
+    ⚡ TIME COMPLEXITY: [State complexity and highlight the specific loop or recursion that triggers it]
+    🔒 SECURITY ISSUES: [Highlight vulnerabilities like hardcoded secrets or path traversal]
+    ✅ SUGGESTIONS: [Specific actionable improvements]
+    ⭐ OVERALL SCORE: [Score out of 10, e.g., 7/10]
+    📝 SUMMARY: [A concise 2-line summary of the code quality and the single most important fix]
 
     Code:
-```{language}
+    ```{language}
     {code}
-```
-
-    Be specific, clear, and beginner-friendly.
+    ```
     """
-    response = model.generate_content(prompt)
-    return response.text
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
 
-def get_improved_code(code, language):
+def get_improved_code(code, language, model="llama-3.3-70b-versatile"):
     prompt = f"""
     You are an expert code reviewer.
     Show BEFORE and AFTER comparison for this {language} code.
@@ -43,10 +51,12 @@ def get_improved_code(code, language):
     Show maximum 3 most important improvements only.
 
     Code to analyze:
-```{language}
+    ```{language}
     {code}
-```
+    ```
     """
-    response = model.generate_content(prompt)
-    return response.text
-
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
