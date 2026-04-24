@@ -23,5 +23,4 @@ dist/
 Thumbs.db
 
 # Project Specific
-screenshots/
 backend/tests/__pycache__/
